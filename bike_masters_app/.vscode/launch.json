@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "type": "pwa-chrome",
+      "name": "http://localhost:3000/vote/1633803069577",
+      "request": "launch",
+      "url": "http://localhost:3000/vote/1633803069577"
+    }
+  ]
+}
