@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-shadow */
 /* eslint-disable no-console */
 /* eslint-disable react/jsx-no-bind */
@@ -19,7 +21,7 @@ export function Vote() {
   const [poll, setPoll] = useState(JSON.parse(localStorage.getItem('poll')))
   const [date, setDate] = useState(new Date())
   const [time, setTime] = useState('')
-  const [selectedPaths, setSelectedPaths] = useState([...poll.selectedPaths])
+  const [selectedPaths] = useState([...poll.selectedPaths])
   // const [comments, setComments] = useState(poll.comments)
   const [text, setText] = useState('')
 
@@ -36,20 +38,17 @@ export function Vote() {
     })
   }, [])
 
+  const contVotes = (pathId) => {
+    const cont = poll.votes.filter((vote) => vote.pathId === pathId)
+    console.log(cont)
+    return cont ? cont.length : 0
+  }
+
   useEffect(async () => {
-    function newSelectedPaths() {
-      return selectedPaths.map((path) => {
-        if (path.id === vote.pathId) {
-          return {
-            ...path,
-            votes: path.votes + 1,
-          }
-        }
-        return path
-      })
-    }
-    setSelectedPaths(newSelectedPaths())
     setPollOpen(!pollOpen)
+    const editedPoll = { ...poll }
+    editedPoll.votes.push(vote)
+    setPoll({ ...editedPoll })
   }, [vote])
 
   const handleVote = (pathId) => {
@@ -108,7 +107,7 @@ export function Vote() {
               {pollOpen
                 ? selectedPaths.map((path) => (
                     <div className='route' key={path.id}>
-                      <Button onClick={() => handleVote(path.id)}>
+                      <Button onClick={() => handleVote(path._id)}>
                         <img src={path.routeImg} alt='' />
                       </Button>
                       <h1>{path.title}</h1>
@@ -127,7 +126,7 @@ export function Vote() {
                         )}
                       </Button>
                       <h1>{path.title}</h1>
-                      <h2>Votos: {path.votes} </h2>
+                      <h2>Votos: {contVotes(path._id)} </h2>
                     </div>
                   ))}
             </div>
