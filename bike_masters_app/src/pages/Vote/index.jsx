@@ -12,12 +12,13 @@ import check from '../../assets/images/check.png'
 import { useAuth } from '../../hooks/useAuth'
 import { PathModal } from '../../components/modals/pathModal/pathModal'
 import Button from '../../components/Button'
+import { putPoll } from '../../services/apiService'
 
 export function Vote() {
   const [isNewModalPathOpen, setIsNewModalPathOpen] = useState(false)
   const [pathToDisplay, setPathToDisplay] = useState('')
   const [vote, setVote] = useState('')
-  const [pollOpen, setPollOpen] = useState(false)
+  const [pollOpen, setPollOpen] = useState(true)
   const [poll, setPoll] = useState(JSON.parse(localStorage.getItem('poll')))
   const [date, setDate] = useState(new Date())
   const [time, setTime] = useState('')
@@ -30,25 +31,32 @@ export function Vote() {
   const formatter = new Intl.DateTimeFormat('pt-BR')
 
   useEffect(async () => {
+    console.log(user)
     setDate(new Date(poll.dateState))
     setTime(poll.timeState)
     setPoll(poll)
-    poll.votes.forEach((vote) => {
-      if (vote.user === user.uid) setPollOpen(false)
-    })
+    console.log(poll.votes.length)
+    if (poll.votes.length > 0) {
+      poll.votes.forEach((vote) => {
+        console.log(vote.userId, user.id)
+        if (vote.userId && vote.userId === user.id) setPollOpen(false)
+      })
+    }
   }, [])
 
   const contVotes = (pathId) => {
     const cont = poll.votes.filter((vote) => vote.pathId === pathId)
-    console.log(cont)
     return cont ? cont.length : 0
   }
 
-  useEffect(async () => {
-    setPollOpen(!pollOpen)
+  useEffect(() => {
     const editedPoll = { ...poll }
-    editedPoll.votes.push(vote)
-    setPoll({ ...editedPoll })
+    if (vote) {
+      editedPoll.votes.push(vote)
+      setPoll({ ...editedPoll })
+      putPoll(editedPoll)
+      setPollOpen(false)
+    }
   }, [vote])
 
   const handleVote = (pathId) => {
@@ -116,14 +124,8 @@ export function Vote() {
                 : selectedPaths.map((path) => (
                     <div className='route' key={path.id}>
                       <Button disabled>
-                        {path.id === vote.id ? (
-                          <>
-                            <img src={check} alt='' className=' checked' />
-                            <img src={path.routeImg} alt='' />
-                          </>
-                        ) : (
-                          <img src={path.routeImg} alt='' />
-                        )}
+                        <img src={check} alt='' className=' checked' />
+                        <img src={path.routeImg} alt='' />
                       </Button>
                       <h1>{path.title}</h1>
                       <h2>Votos: {contVotes(path._id)} </h2>
