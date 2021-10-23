@@ -72,7 +72,8 @@ export function Vote() {
   }
 
   const handleShowSelectModal = (id) => {
-    setPathToDisplay(selectedPaths.find((path) => id === path.id))
+    setPathToDisplay(selectedPaths.find((path) => id === path._id))
+    console.log(pathToDisplay)
     handleOpenPathModal()
   }
 
@@ -94,7 +95,7 @@ export function Vote() {
           <div className='vote-options'>
             {selectedPaths.map((path) => (
               <div className='vote-options-item' key={path.id}>
-                <Button onClick={() => handleShowSelectModal(path.id)}>
+                <Button onClick={() => handleShowSelectModal(path._id)}>
                   <img src={path.routeImg} alt='' />
                 </Button>
                 <h1>{path.title}</h1>
